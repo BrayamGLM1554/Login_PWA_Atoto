@@ -18,26 +18,12 @@ cp .env.example .env
 ## Variables de entorno (.env)
 
 ```
-MONGO_URI=mongodb+srv://admin:BrayamLM155478@cluster0.9wqzbjl.mongodb.net/authDBPWA?appName=Cluster0
+MONGO_URI=mongodb+srv://<user>:<password>@cluster0.9wqzbjl.mongodb.net/authDBPWA?appName=Cluster0
 JWT_SECRET=cambia_esto_en_produccion_con_algo_muy_largo
 PORT=3000
 CLOUDINARY_CLOUD_NAME=tu_cloud_name
 CLOUDINARY_API_KEY=tu_api_key
 CLOUDINARY_API_SECRET=tu_api_secret
-```
-
-## Crear admin inicial
-
-```bash
-node src/seed.js
-```
-Esto crea: `admin@municipio.gob.mx` / `Admin123!`
-
-## Iniciar servidor
-
-```bash
-npm run dev     # desarrollo
-npm start       # producción
 ```
 
 ---
