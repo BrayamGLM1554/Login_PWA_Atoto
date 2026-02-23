@@ -10,7 +10,11 @@ const {
 const { authMiddleware, soloAdmin } = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
 
-// Todas las rutas requieren auth + ser ADMIN
+// Avatar: cualquier usuario autenticado puede cambiar su propio avatar,
+// el ADMIN puede cambiar el de cualquiera
+router.post('/users/:id/avatar', authMiddleware, upload.single('avatar'), subirAvatar);
+
+// El resto solo para ADMIN
 router.use(authMiddleware, soloAdmin);
 
 router.get('/users', listarUsuarios);
@@ -18,6 +22,5 @@ router.post('/users', crearUsuario);
 router.get('/users/:id', obtenerUsuario);
 router.patch('/users/:id/areas', actualizarAreas);
 router.patch('/users/:id/toggle', toggleActivo);
-router.post('/users/:id/avatar', upload.single('avatar'), subirAvatar);
 
 module.exports = router;

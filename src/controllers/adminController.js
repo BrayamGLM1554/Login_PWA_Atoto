@@ -119,6 +119,13 @@ exports.toggleActivo = async (req, res) => {
 exports.subirAvatar = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Un usuario normal solo puede cambiar su propio avatar
+    // El ADMIN puede cambiar el de cualquiera
+    if (req.user.rol !== 'ADMIN' && req.user.uid.toString() !== id) {
+      return res.status(403).json({ error: 'Solo puedes cambiar tu propio avatar' });
+    }
+
     const usuario = await User.findById(id);
     if (!usuario) return res.status(404).json({ error: 'Usuario no encontrado' });
 
@@ -144,6 +151,7 @@ exports.subirAvatar = async (req, res) => {
     return res.json({
       mensaje: 'Avatar actualizado',
       avatar: usuario.avatar.url,
+      perfil: usuario.toProfile(),
     });
   } catch (error) {
     console.error('Error subiendo avatar:', error);
