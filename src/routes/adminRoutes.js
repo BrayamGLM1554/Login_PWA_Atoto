@@ -10,17 +10,16 @@ const {
 const { authMiddleware, soloAdmin, puedeRegistrarUsuarios } = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
 
-// Avatar: cualquier usuario autenticado puede cambiar su propio avatar,
-// el ADMIN puede cambiar el de cualquiera
+// Avatar: cualquier usuario autenticado puede cambiar su propio avatar
 router.post('/users/:id/avatar', authMiddleware, upload.single('avatar'), subirAvatar);
 
-// Crear usuario: ADMIN y JEFE_AREA (Jefe de Area, Director, Coordinador)
+// Crear y listar usuarios: ADMIN y JEFE_AREA
 router.post('/users', authMiddleware, puedeRegistrarUsuarios, crearUsuario);
+router.get('/users', authMiddleware, puedeRegistrarUsuarios, listarUsuarios);
 
-// El resto solo para ADMIN
+// Solo ADMIN: ver detalle, modificar areas, activar/desactivar
 router.use(authMiddleware, soloAdmin);
 
-router.get('/users', listarUsuarios);
 router.get('/users/:id', obtenerUsuario);
 router.patch('/users/:id/areas', actualizarAreas);
 router.patch('/users/:id/toggle', toggleActivo);

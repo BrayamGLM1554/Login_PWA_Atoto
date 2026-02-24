@@ -42,6 +42,7 @@ exports.crearUsuario = async (req, res) => {
       passwordHash,
       puesto,
       areasPermitidas: areasPermitidas || [],
+      creadoPor: req.user.uid, // backend registra quién creó al usuario
     });
 
     await nuevoUsuario.save();
@@ -96,7 +97,19 @@ exports.actualizarAreas = async (req, res) => {
 
 exports.listarUsuarios = async (req, res) => {
   try {
-    const usuarios = await User.find().select('-passwordHash').sort({ createdAt: -1 });
+    let filtro = {};
+
+    if (req.user.rol === 'JEFE_AREA') {
+      // El jefe de area solo ve los usuarios que el mismo registro
+      filtro.creadoPor = req.user.uid;
+    }
+    // ADMIN no tiene filtro, ve todos
+
+    const usuarios = await User.find(filtro)
+      .select('-passwordHash')
+      .populate('creadoPor', 'nombre apellidos puesto')
+      .sort({ createdAt: -1 });
+
     return res.json({ usuarios: usuarios.map(u => u.toProfile()) });
   } catch (error) {
     return res.status(500).json({ error: 'Error interno del servidor' });
