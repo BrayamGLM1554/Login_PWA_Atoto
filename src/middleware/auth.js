@@ -35,6 +35,15 @@ const soloAdmin = (req, res, next) => {
   next();
 };
 
+// ADMIN y JEFE_AREA (Jefe de Area, Director, Coordinador) pueden registrar usuarios
+const puedeRegistrarUsuarios = (req, res, next) => {
+  const rolesPermitidos = ['ADMIN', 'JEFE_AREA'];
+  if (!rolesPermitidos.includes(req.user?.rol)) {
+    return res.status(403).json({ error: 'No tienes permiso para registrar usuarios' });
+  }
+  next();
+};
+
 // areaGuard - valida que el usuario tenga acceso al area solicitada
 const areaGuard = (required = true) => (req, res, next) => {
   if (!required) return next();
@@ -54,4 +63,4 @@ const areaGuard = (required = true) => (req, res, next) => {
   next();
 };
 
-module.exports = { authMiddleware, soloAdmin, areaGuard };
+module.exports = { authMiddleware, soloAdmin, puedeRegistrarUsuarios, areaGuard };

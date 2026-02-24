@@ -2,15 +2,29 @@ const User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const { cloudinary, subirACloudinary } = require('../config/cloudinary');
 
+// Puestos que resultan en roles de nivel bajo (los que JEFE_AREA puede crear)
+const PUESTOS_OPERATIVOS = ['empleado', 'operativo', 'asistente'];
+
 exports.crearUsuario = async (req, res) => {
   try {
-    // Campos protegidos: areasPermitidas, rol, creadoPor los controla backend
     const { nombre, apellidos, email, password, puesto, areasPermitidas } = req.body;
 
     if (!nombre || !apellidos || !email || !password || !puesto) {
       return res.status(400).json({ 
         error: 'Campos requeridos: nombre, apellidos, email, password, puesto' 
       });
+    }
+
+    // JEFE_AREA solo puede crear usuarios con puestos operativos
+    // Solo ADMIN puede crear otros jefes, directores o admins
+    if (req.user.rol === 'JEFE_AREA') {
+      const puestoLower = puesto.toLowerCase();
+      const esOperativo = PUESTOS_OPERATIVOS.some(p => puestoLower.includes(p));
+      if (!esOperativo) {
+        return res.status(403).json({ 
+          error: 'Solo puedes registrar usuarios con puesto Empleado, Operativo o Asistente' 
+        });
+      }
     }
 
     const existente = await User.findOne({ email });
