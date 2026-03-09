@@ -1,16 +1,25 @@
 const Registro = require('../models/Registro');
+const { normalizarAreaId, AREAS_VALIDAS } = require('../middleware/auth');
 
 exports.listarRegistros = async (req, res) => {
   try {
-    const { page = 1, limit = 20, areaId } = req.query;
+    const { page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
+
+    // Normalizar areaId del query si viene
+    let areaId = null;
+    if (req.query.areaId) {
+      areaId = normalizarAreaId(req.query.areaId);
+      if (!AREAS_VALIDAS.has(areaId)) {
+        return res.status(400).json({ error: `Área "${req.query.areaId}" no válida` });
+      }
+    }
 
     let filtro = {};
 
     if (req.user.rol === 'ADMIN') {
       if (areaId) filtro.areaId = areaId;
     } else {
-      // Usuarios solo ven sus areas
       filtro.areaId = { $in: req.user.areas };
       if (areaId && req.user.areas.includes(areaId)) {
         filtro.areaId = areaId;
@@ -30,9 +39,9 @@ exports.listarRegistros = async (req, res) => {
       registros,
       paginacion: {
         total,
-        pagina: Number(page),
+        pagina:  Number(page),
         paginas: Math.ceil(total / limit),
-        limite: Number(limit),
+        limite:  Number(limit),
       },
     });
   } catch (error) {
@@ -43,7 +52,7 @@ exports.listarRegistros = async (req, res) => {
 
 exports.crearRegistro = async (req, res) => {
   try {
-    // areaGuard ya valido el acceso al area
+    // areaGuard ya normalizó y validó req.body.areaId
     const { areaId, data } = req.body;
 
     if (!areaId || !data) {
@@ -52,7 +61,7 @@ exports.crearRegistro = async (req, res) => {
 
     const registro = new Registro({
       areaId,
-      creadoPor: req.user.uid, // backend controla este campo
+      creadoPor: req.user.uid,
       data,
     });
 
@@ -76,7 +85,6 @@ exports.obtenerRegistro = async (req, res) => {
 
     if (!registro) return res.status(404).json({ error: 'Registro no encontrado' });
 
-    // Validar acceso al area
     if (req.user.rol !== 'ADMIN' && !req.user.areas.includes(registro.areaId)) {
       return res.status(403).json({ error: 'No tienes acceso a este registro' });
     }

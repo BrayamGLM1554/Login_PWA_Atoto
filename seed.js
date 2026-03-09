@@ -6,7 +6,7 @@ async function seed() {
   await mongoose.connect(process.env.MONGO_URI);
   
   // Import after connecting
-  const User = require('./models/User');
+  const User = require('./src/models/User');
   
   const adminExiste = await User.findOne({ rol: 'ADMIN' });
   if (adminExiste) {

@@ -2,7 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
-const connectDB = require('./config/database');
+const connectDB = require('./src/config/database');
 
 const app = express();
 
@@ -16,9 +16,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
 // Rutas
-app.use('/auth', require('./routes/authRoutes'));
-app.use('/admin', require('./routes/adminRoutes'));
-app.use('/registros', require('./routes/registrosRoutes'));
+app.use('/auth', require('./src/routes/authRoutes'));
+app.use('/admin', require('./src/routes/adminRoutes'));
+app.use('/registros', require('./src/routes/registrosRoutes'));
+app.use('/membretadas', require('./src/routes/membretadasRoutes'));
 
 // Health check
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date() }));
@@ -34,6 +35,6 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
-  console.log(`📋 Entorno: ${process.env.NODE_ENV || 'development'}`);
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log(`Entorno: ${process.env.NODE_ENV || 'development'}`);
 });
