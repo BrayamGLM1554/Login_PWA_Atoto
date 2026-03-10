@@ -1,11 +1,11 @@
 const HojaMembretada = require('../models/HojaMembretada');
 const { cloudinary, subirMembretadaACloudinary } = require('../config/cloudinary');
-const { normalizarAreaId, AREAS_VALIDAS } = require('../middleware/auth');
+const { AREAS_VALIDAS } = require('../middleware/auth');
 
 // ============================================================================
 // POST /membretadas
 // - puedeGestionarMembretadas (router) ya bloqueó EMPLEADO y ASISTENTE
-// - areaGuard (router) ya normalizó y validó req.body.areaId
+// - areaGuard (router) ya validó y limpió req.body.areaId
 // ============================================================================
 exports.subirHojaMembretada = async (req, res) => {
   try {
@@ -60,17 +60,16 @@ exports.subirHojaMembretada = async (req, res) => {
 
 // ============================================================================
 // GET /membretadas?areaId=&page=&limit=
-// Todos los roles autenticados. Normaliza areaId del query si viene.
+// Todos los roles autenticados.
 // ============================================================================
 exports.listarHojasMembretadas = async (req, res) => {
   try {
     let { page = 1, limit = 20 } = req.query;
     const skip = (Number(page) - 1) * Number(limit);
 
-    // Normalizar areaId del query si el frontend lo manda
     let areaId = null;
     if (req.query.areaId) {
-      areaId = normalizarAreaId(req.query.areaId);
+      areaId = req.query.areaId.trim();
       if (!AREAS_VALIDAS.has(areaId)) {
         return res.status(400).json({ error: `Área "${req.query.areaId}" no válida` });
       }
@@ -124,11 +123,10 @@ exports.listarHojasMembretadas = async (req, res) => {
 
 // ============================================================================
 // GET /membretadas/area/:areaId
-// Normaliza el param antes de cualquier operación.
 // ============================================================================
 exports.obtenerHojasPorArea = async (req, res) => {
   try {
-    const normalizarAreaId = (areaId) => areaId?.trim() ?? '';
+    const areaId = req.params.areaId?.trim();
 
     if (!AREAS_VALIDAS.has(areaId)) {
       return res.status(400).json({ error: `Área "${req.params.areaId}" no válida` });

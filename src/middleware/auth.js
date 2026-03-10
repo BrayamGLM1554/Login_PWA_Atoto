@@ -12,25 +12,7 @@ const AREAS_VALIDAS = new Set([
   'Catastro',
   'Servicios Públicos',
   'Transparencia e Informática',
-])
-
-/**
- * Normaliza un areaId al formato kebab-case canónico.
- * Permite que el frontend envíe variantes sin romper la API:
- *   'Recursos Humanos'  → 'recursos-humanos'
- *   'recursos_humanos'  → 'recursos-humanos'
- *   'Tesorería'         → 'tesoreria'
- *   'recursos-humanos'  → 'recursos-humanos' (ya correcto, sin cambio)
- */
-const normalizarAreaId = (valor) => {
-  if (!valor || typeof valor !== 'string') return null;
-  return valor
-    .trim()
-    .toLowerCase()
-    .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // tildes: á→a, é→e
-    .replace(/\s+/g, '-')  // espacios → guiones
-    .replace(/_/g, '-');   // underscores → guiones
-};
+]);
 
 // ─── authMiddleware ───────────────────────────────────────────────────────────
 const authMiddleware = async (req, res, next) => {
@@ -77,8 +59,6 @@ const puedeRegistrarUsuarios = (req, res, next) => {
 };
 
 // ─── puedeGestionarMembretadas ────────────────────────────────────────────────
-// Separa explícitamente quién puede escribir/eliminar membretadas.
-// EMPLEADO y ASISTENTE quedan bloqueados aquí — no en el controller.
 const puedeGestionarMembretadas = (req, res, next) => {
   if (!['ADMIN', 'JEFE_AREA'].includes(req.user?.rol)) {
     return res.status(403).json({
@@ -91,12 +71,10 @@ const puedeGestionarMembretadas = (req, res, next) => {
 // ─── areaGuard ────────────────────────────────────────────────────────────────
 /**
  * 1. Extrae areaId de body / query / params.
- * 2. Lo normaliza a kebab-case.
+ * 2. Solo aplica trim (sin convertir a kebab-case).
  * 3. Valida que sea un área del sistema.
  * 4. Verifica que el usuario tenga acceso.
- * 5. Reescribe req.body/query/params con el valor normalizado
- *    → los controllers siempre reciben el ID canónico, sin importar
- *      lo que mandó el frontend.
+ * 5. Reescribe req.body/query/params con el valor limpio.
  */
 const areaGuard = (required = true) => (req, res, next) => {
   if (!required) return next();
@@ -110,7 +88,7 @@ const areaGuard = (required = true) => (req, res, next) => {
     return res.status(400).json({ error: 'areaId es requerido' });
   }
 
-  const areaId = normalizarAreaId(rawAreaId);
+  const areaId = rawAreaId.trim();
 
   if (!AREAS_VALIDAS.has(areaId)) {
     return res.status(400).json({
@@ -119,7 +97,6 @@ const areaGuard = (required = true) => (req, res, next) => {
     });
   }
 
-  // Reescribir con el valor canónico para que los controllers no repitan este trabajo
   if (req.body?.areaId !== undefined)   req.body.areaId   = areaId;
   if (req.query?.areaId !== undefined)  req.query.areaId  = areaId;
   if (req.params?.areaId !== undefined) req.params.areaId = areaId;
@@ -141,6 +118,5 @@ module.exports = {
   puedeRegistrarUsuarios,
   puedeGestionarMembretadas,
   areaGuard,
-  normalizarAreaId,
   AREAS_VALIDAS,
 };
