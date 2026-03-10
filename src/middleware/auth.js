@@ -3,16 +3,16 @@ const User = require('../models/User');
 
 // ─── Fuente única de verdad de áreas — debe coincidir con AREAS_SISTEMA del frontend ──
 const AREAS_VALIDAS = new Set([
-  'recursos-humanos',
-  'secretaria',
-  'tesoreria',
-  'obras-publicas',
-  'desarrollo-social',
-  'seguridad-publica',
-  'catastro',
-  'servicios-publicos',
-  'transparencia-informatica',
-]);
+  'Recursos Humanos',
+  'Secretaría',
+  'Tesorería',
+  'Obras Públicas',
+  'Desarrollo Social',
+  'Seguridad Pública',
+  'Catastro',
+  'Servicios Públicos',
+  'Transparencia e Informática',
+])
 
 /**
  * Normaliza un areaId al formato kebab-case canónico.

@@ -128,7 +128,7 @@ exports.listarHojasMembretadas = async (req, res) => {
 // ============================================================================
 exports.obtenerHojasPorArea = async (req, res) => {
   try {
-    const areaId = normalizarAreaId(req.params.areaId);
+    const normalizarAreaId = (areaId) => areaId?.trim() ?? '';
 
     if (!AREAS_VALIDAS.has(areaId)) {
       return res.status(400).json({ error: `Área "${req.params.areaId}" no válida` });
