@@ -9,7 +9,6 @@ const {
 } = require('../controllers/adminController');
 const { authMiddleware, soloAdmin, puedeRegistrarUsuarios } = require('../middleware/auth');
 const { upload } = require('../config/cloudinary');
-const { resetearPassword } = require('../controllers/authController');
 
 // Avatar: cualquier usuario autenticado puede cambiar su propio avatar
 router.post('/users/:id/avatar', authMiddleware, upload.single('avatar'), subirAvatar);
@@ -20,7 +19,6 @@ router.get('/users', authMiddleware, puedeRegistrarUsuarios, listarUsuarios);
 
 // Solo ADMIN: ver detalle, modificar areas, activar/desactivar
 router.use(authMiddleware, soloAdmin);
-router.patch('/users/:id/password', authMiddleware, puedeRegistrarUsuarios, resetearPassword);
 
 router.get('/users/:id', obtenerUsuario);
 router.patch('/users/:id/areas', actualizarAreas);
