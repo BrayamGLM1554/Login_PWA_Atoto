@@ -10,7 +10,14 @@ const app = express();
 connectDB();
 
 // Middlewares globales
-app.use(cors());
+app.use(cors({
+  origin: true, // permite cualquier origen dinámicamente
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+app.options('*', cors());
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('dev'));
