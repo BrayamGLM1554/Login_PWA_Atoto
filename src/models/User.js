@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema({
 // Derivar rol del puesto automáticamente (si no es ADMIN)
 userSchema.pre('save', function (next) {
   if (this.rol !== 'ADMIN') {
-    this.rol = PUESTO_ROL_MAP[puestoLower] || 'EMPLEADO';
+    this.rol = PUESTO_ROL_MAP[this.puesto] || 'EMPLEADO';
   }
   next();
 });
