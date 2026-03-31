@@ -3,13 +3,9 @@ const bcrypt = require('bcryptjs');
 
 // Mapa de puestos a roles
 const PUESTO_ROL_MAP = {
-  'jefe de area': 'JEFE_AREA',
-  'jefe de área': 'JEFE_AREA',
-  'director': 'JEFE_AREA',
+  'Director': 'JEFE_AREA',
   'coordinador': 'JEFE_AREA',
-  'empleado': 'EMPLEADO',
-  'asistente': 'ASISTENTE',
-  'operativo': 'EMPLEADO',
+  'Auxiliar Administrativo': 'EMPLEADO',
 };
 
 const userSchema = new mongoose.Schema({
