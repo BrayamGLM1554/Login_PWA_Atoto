@@ -89,6 +89,34 @@ exports.resetearPassword = async (req, res) => {
   }
 };
 
+// authController.js — agregar este export
+exports.cambiarPasswordInicial = async (req, res) => {
+  try {
+    const { nuevaPassword } = req.body;
+
+    if (!nuevaPassword || nuevaPassword.length < 6) {
+      return res.status(400).json({
+        error: 'La contraseña debe tener al menos 6 caracteres',
+      });
+    }
+
+    const usuario = await User.findById(req.user.uid).select('+passwordHash');
+    if (!usuario) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const salt = await bcrypt.genSalt(12);
+    usuario.passwordHash = await bcrypt.hash(nuevaPassword, salt);
+    usuario.primerIngreso = false; // ← marca como completado
+    await usuario.save();
+
+    return res.json({ ok: true, mensaje: 'Contraseña actualizada correctamente' });
+  } catch (error) {
+    console.error('Error cambiando contraseña inicial:', error);
+    return res.status(500).json({ error: 'Error interno del servidor' });
+  }
+};
+
 exports.perfil = async (req, res) => {
   try {
     return res.json({ perfil: req.user.doc.toProfile() });

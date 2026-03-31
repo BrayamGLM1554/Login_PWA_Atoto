@@ -1,11 +1,12 @@
 const router = require('express').Router();
-const { login, perfil, resetearPassword } = require('../controllers/authController');
+const { login, perfil, resetearPassword, cambiarPasswordInicial } = require('../controllers/authController');
 const { authMiddleware } = require('../middleware/auth');
 const User = require('../models/User'); // ← faltaba esto
 
 router.post('/login', login);
 router.get('/perfil', authMiddleware, perfil);
 router.patch('/users/:id/password', authMiddleware, resetearPassword);
+router.patch('/cambiar-password-inicial', authMiddleware, cambiarPasswordInicial);
 router.patch('/aceptar-aviso', authMiddleware, async (req, res) => {
   try {
     await User.findByIdAndUpdate(req.user.uid, {

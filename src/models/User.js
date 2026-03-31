@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema({
   // Quien registro a este usuario (null si fue el seed/admin inicial)
   creadoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null },
   avisoPrivacidadAceptado: { type: Boolean, default: false },
+  primerIngreso: { type: Boolean, default: true },
 }, { timestamps: true });
 
 // Derivar rol del puesto automáticamente (si no es ADMIN)
@@ -57,6 +58,7 @@ userSchema.methods.toProfile = function () {
     createdAt: this.createdAt,
     creadoPor: this.creadoPor || null,
     avisoPrivacidadAceptado: this.avisoPrivacidadAceptado,
+    primerIngreso: this.primerIngreso,
   };
 };
 
