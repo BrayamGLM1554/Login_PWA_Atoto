@@ -5,5 +5,15 @@ const { authMiddleware } = require('../middleware/auth');
 router.post('/login', login);
 router.get('/perfil', authMiddleware, perfil);
 router.patch('/users/:id/password', authMiddleware, resetearPassword);
+router.patch('/aceptar-aviso', authMiddleware, async (req, res) => {
+  try {
+    await User.findByIdAndUpdate(req.user.uid, {
+      avisoPrivacidadAceptado: true,
+    });
+    res.json({ ok: true });
+  } catch (error) {
+    res.status(500).json({ error: 'Error al actualizar aviso' });
+  }
+});
 
 module.exports = router;
