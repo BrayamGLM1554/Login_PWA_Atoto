@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 // Mapa de puestos a roles
 const PUESTO_ROL_MAP = {
   'Director': 'JEFE_AREA',
-  'coordinador': 'JEFE_AREA',
+  'Coordinador': 'JEFE_AREA',
   'Auxiliar Administrativo': 'EMPLEADO',
 };
 
